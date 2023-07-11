@@ -1,0 +1,108 @@
+def obtener_precio(tipo):
+    if tipo == "A":
+        return 3800
+    elif tipo == "B":
+        return 3000
+    elif tipo == "C":
+        return 2800
+    elif tipo == "D":
+        return 3500
+    else :
+        return 0
+
+def crear_departamentos():
+    departamentos = []
+    for piso in range(1, 11):
+        for tipo in ['A', 'B', 'C', 'D']:
+            departamento = {'piso': piso, 'tipo': tipo, 'vendido': False, 'comprador': None}
+            departamentos.append(departamento)
+    return departamentos
+
+
+def mostrar_estado(departamento):
+    estado = "Vendido (X)" if departamento['vendido'] else "Disponible"
+    return "{}{} - {}".format(departamento['tipo'], departamento['piso'], estado)
+
+
+def mostrar_departamentos_disponibles(departamentos):
+    print("Estado de los departamentos:")
+    for departamento in departamentos:
+        print(mostrar_estado(departamento))
+
+
+def comprar_departamento(departamentos):
+    piso = int(input("Ingrese el piso: "))
+    tipo = input("Ingrese el tipo de departamento (A, B, C o D): ")
+    run = input("Ingrese el RUN del comprador (sin guion ni puntos): ")
+
+    for departamento in departamentos:
+        if departamento['piso'] == piso and departamento['tipo'] == tipo and not departamento['vendido']:
+            departamento['vendido'] = True
+            departamento['comprador'] = run
+            print("Se ha comprado el departamento {}. Operacion realizada correctamente.".format(tipo + str(piso)))
+            return obtener_precio(tipo)
+
+    print("El departamento seleccionado no esta disponible. Por favor, seleccione otro.")
+    return 0
+
+
+def mostrar_listado_compradores(departamentos):
+    print("Listado de compradores:")
+    compradores = [(departamento['comprador'], departamento['tipo'], departamento['piso']) for departamento in departamentos if departamento['vendido']]
+    compradores.sort()
+    for comprador, tipo, piso in compradores:
+        print("Comprador: {} - Departamento: {}{}".format(comprador, tipo, piso))
+
+
+def mostrar_ganancias_totales(departamentos, ganancias_totales):
+    tipos_departamento = {'A': {'cantidad': 0, 'ganancias': 0},
+                          'B': {'cantidad': 0, 'ganancias': 0},
+                          'C': {'cantidad': 0, 'ganancias': 0},
+                          'D': {'cantidad': 0, 'ganancias': 0}}
+
+    for departamento in departamentos:
+        if departamento['vendido']:
+            precio = obtener_precio(departamento['tipo'])
+            tipos_departamento[departamento['tipo']]['cantidad'] += 1
+            tipos_departamento[departamento['tipo']]['ganancias'] += precio
+
+    print("Ganancias totales:")
+    for tipo, datos in tipos_departamento.items():
+        cantidad = datos['cantidad']
+        ganancias = datos['ganancias']
+        precio_individual = ganancias / cantidad if cantidad > 0 else 0
+        print("Tipo de departamento: {} - Cantidad: {} - Precio individual: {} UF - Ganancias: {} UF".format(tipo, cantidad, precio_individual, ganancias))
+
+    print("Ganancias totales: {} UF".format(ganancias_totales))
+
+
+def ejecutar_menu():
+    departamentos = crear_departamentos()
+    ganancias_totales = 0
+
+    while True:
+        print("\n--- Menu ---")
+        print("1. Comprar departamento")
+        print("2. Mostrar estado de los departamentos")
+        print("3. Ver listado de compradores")
+        print("4. Mostrar ganancias totales")
+        print("5. Salir")
+
+        opcion = input("Ingrese una opcion: ")
+
+        if opcion == "1":
+            ganancias_totales += comprar_departamento(departamentos)
+        elif opcion == "2":
+            mostrar_departamentos_disponibles(departamentos)
+        elif opcion == "3":
+            mostrar_listado_compradores(departamentos)
+        elif opcion == "4":
+            mostrar_ganancias_totales(departamentos, ganancias_totales)
+        elif opcion == "5":
+            break
+        else:
+            print("Opcion invalida. Por favor, ingrese nuevamente.")
+
+
+# Ejemplo de uso
+ejecutar_menu()
